@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/javascripts/d3.v3.min.js"></script>
+    <script src="/javascripts/toolstip.js"></script>
+    <script src="/javascripts/bundle.js"></script>
+    <script src="/javascripts/iscroll.js"></script>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        background: transparent;
+      }
+      html,body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        /*background: #rgb(234, 255, 138);*/
+/*background: red;*/
+      }
+      .app{
+        /*background-color: #00FF5A;*/
+      }
+      .axis path,.axis line {
+      	fill: none;
+      	stroke: #000;
+      	shape-rendering: crispEdges;
+        opacity: 0.5;
+      }
+      .tick text{
+        font-size: 12px;
+        opacity: 0.5;
+      }
+
+.line .item{
+  cursor: pointer;
+}
+
+/**/
+.zoom {
+    fill: transparent;
+    /*cursor: pointer;*/
+}
+
+.lline line{
+	fill: none;
+  stroke: #717171;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 5px, 10px;
+	cursor: col-resize;
+}
+
+.menu line{
+  fill: none;
+  stroke: #00AACC;
+  /*shape-rendering: crispEdges;*/
+	cursor: col-resize;
+  stroke-width:2
+}
+
+.menu line.left{
+  stroke: #0f0;
+}
+
+.menu line.right{
+  stroke: #f00;
+}
+/**/
+    </style>
+
+    <style type="text/css">
+    * {
+    	-webkit-box-sizing: border-box;
+    	-moz-box-sizing: border-box;
+    	box-sizing: border-box;
+    }
+
+    html {
+    	-ms-touch-action: none;
+    }
+
+    body,ul,li {
+    	padding: 0;
+    	margin: 0;
+    	border: 0;
+    }
+
+    body {
+    	font-size: 12px;
+    	font-family: ubuntu, helvetica, arial;
+    	overflow: hidden; /* this is important to prevent the whole page to bounce */
+      /*background: -webkit-linear-gradient(top,#ddd,#fafafa 20%,#fafafa 80%, #ddd);*/
+    }
+
+    #header {
+    	position: absolute;
+    	z-index: 2;
+    	top: 0;
+    	left: 0;
+    	width: 100%;
+    	height: 45px;
+    	line-height: 45px;
+    	/*border-bottom: 1px solid #CD235C;*/
+    	padding: 0;
+    	/*background: #eee;*/
+    	text-align: center;
+    	font-weight: bold;
+    }
+
+    #footer {
+    	position: absolute;
+    	z-index: 2;
+    	bottom: 0;
+    	left: 0;
+    	width: 100%;
+    	/*background: #eee;*/
+    	height: 45px;
+    	/*border-top: 1px solid #CD235C;*/
+    	padding: 0;
+    	font-weight: bold;
+    }
+
+    #wrapper {
+    	position: absolute;
+    	z-index: 1;
+    	top: 45px;
+    	bottom: 45px;
+    	left: 0;
+    	width: 100%;
+    	/*background: #fafafa;*/
+    	overflow: hidden;
+    }
+
+    #container{
+      /*background: blue;*/
+    }
+
+    #scroller {
+    	position: absolute;
+    	z-index: 1;
+    	-webkit-tap-highlight-color: rgba(0,0,0,0);
+    	width: 100%;
+    	-webkit-transform: translateZ(0);
+    	-moz-transform: translateZ(0);
+    	-ms-transform: translateZ(0);
+    	-o-transform: translateZ(0);
+    	transform: translateZ(0);
+    	-webkit-touch-callout: none;
+    	-webkit-user-select: none;
+    	-moz-user-select: none;
+    	-ms-user-select: none;
+    	user-select: none;
+    	-webkit-text-size-adjust: none;
+    	-moz-text-size-adjust: none;
+    	-ms-text-size-adjust: none;
+    	-o-text-size-adjust: none;
+    	text-size-adjust: none;
+    }
+
+    #container{
+      width: 100%;
+    }
+
+    </style>
+
+    <style type="text/css">
+    	.tooltip {
+        pointer-events: none;
+
+        position: absolute;
+        padding: 10px;
+        margin: 0;
+        max-width: 30%;
+
+        box-shadow: 0 0 6px rgba(0, 0, 0, .8);
+        background: rgba(0, 0, 0, .6);
+        border: 1px solid rgba(0, 0, 0, .7);
+
+        color: rgba(244,244,244,.8);
+
+        text-shadow: 1px 1px rgba(0,0,0,.2);
+
+        font-size: 14px;
+    }
+
+    .tooltip h1 {
+        font-size: 22px;
+        border-bottom: 1px solid;
+        margin: 0 0 10px;
+    }
+
+    .tooltip ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0 10px;
+    		line-height: 20px;
+    }
+
+    .tooltip li > span:first-child {
+    }
+
+    .tooltip li > span:last-child {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .tooltip li > span.green > span {
+        color: greenyellow;
+    }
+
+    .tooltip li > span.red > span {
+        color: #FF3E2F;
+    }
+
+    .tooltip li > span.green > span,
+    .tooltip li > span.red > span {
+        margin-left: 5px;
+        font-size: 14px;
+        text-align: right;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .tooltip li > span.green > span {
+        /*vertical-align: top;*/
+    }
+
+    .tooltip li > span.red > span:before {
+        content: "‒";
+    }
+
+    .tooltip li > span.green > span:before {
+        content: "+";
+    }
+
+    .tooltip li > span.green > span:after {
+        content: " ↑";
+        font-size: 16px;
+    }
+
+    .tooltip li > span.red > span:after {
+        content: " ↓";
+        font-size: 16px;
+    }
+    </style>
+
+<script type="text/javascript">
+
+var myScroll;
+
+function loaded () {
+  myScroll = new IScroll('#wrapper', { mouseWheel: true });
+}
+
+  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+</script>
+
+
+
+  </head>
+
+<body>
+<svg id="header"></svg>
+<div id="wrapper">
+	<div id="scroller">
+  	<div id="container">
+  	</div>
+	</div>
+</div>
+<svg id="footer"></svg>
+<script type="text/javascript" src="/javascripts/example.js"></script>
+</html>
