@@ -11,6 +11,7 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
 
   var tickFormat = config.locale ? config.locale.timeFormat.multi(
     tickFormatData) : d3.time.format.multi(tickFormatData);
+
   xAxis[where] = d3.svg.axis()
     .scale(xScale)
     .orient(where)

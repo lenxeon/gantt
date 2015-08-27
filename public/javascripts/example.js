@@ -15,54 +15,45 @@ function visit(parent, visitFn, childrenFn) {
 }
 
 //url
-var url = config.url || '/javascripts/flare.json';
+var url = config.url || '/javascripts/flare_lite.json';
 var treeJSON = d3.json(url, function(error, result) {
 
   var nodeLength = 0,
     maxLabelLength = 0,
     totalNodes = 0;
   var tempDate = new Date();
+  var getStart = function() {
+    var _tempDate = d3.time.day(d3.time.day.offset(tempDate, 1));
+    tempDate = _tempDate;
+    return _tempDate;
+  }
+  var getEnd = function() {
+    return d3.time.day(d3.time.day.offset(tempDate, 1));
+  }
   visit(result, function(d) {
     //这里加入一段处理函数，添加上开始时间，结束时间
     var r1 = Math.ceil(Math.random() * 100) % 3 + 1;
     var r2 = Math.ceil(Math.random() * 100) % 3;
+    d.uuid = (Math.random() * 100000000000000000 + 100000000000000000) +
+      "";
     d.percent = Math.ceil(Math.random() * 100 / 10) / 10;
-    d.startDate = d3.time.day(d3.time.day.offset(new Date(), r1));
-    // console.log(r1 + '\t' + d.startDate);
-    d.endDate = d3.time.day.offset(d.startDate, r2 + 1);
+    d.startDate = getStart();
+    d.endDate = getEnd();
     d.taskName = '我的任务' + "#task#" + (++nodeLength);
     d.name = d.taskName;
     d.taskStatus = d.size / 3 == 0 ? "finished" : "runing";
-    // console.log(d);
+    d.percent = Math.ceil(Math.random() * 100 / 10) / 10;
+    d.package = Math.ceil(Math.random() * 100) % 2 == 0 ? true :
+      false
 
-    var getStart = function() {
-      var _tempDate = d3.time.day(d3.time.day.offset(tempDate, 1));
-      // console.log(tempDate + '\t' + r1 + '\t' + _tempDate);
-      tempDate = _tempDate;
-      return _tempDate;
-    }
-    var getEnd = function() {
-      return d3.time.day(d3.time.day.offset(tempDate, 1));
-    }
-
-    // var task2 = {
-    //   name: '我的任务' + "#task#" + (nodeLength) + '_02',
-    //   startDate: d3.time.day(d3.time.day.offset(task1.startDate, 3)),
-    //   endDate: d3.time.day(d3.time.day.offset(task1.endDate, 3)),
-    //   status: Math.ceil(Math.random() * 100) % 2 == 0 ? 'finished' : 'runing',
-    //   percent: Math.ceil(Math.random() * 100 / 10) / 10
-    // }
-
-    for (var i = 0; i < 4; i++) {
-      var task1 = {
-        name: '我的任务' + "#tk#" + (nodeLength) + '_' + i,
-        startDate: getStart(),
-        endDate: getEnd(),
-        status: Math.ceil(Math.random() * 100) % 2 == 0 ? 'finished' : 'runing',
-        percent: Math.ceil(Math.random() * 100 / 10) / 10
-      }
+    for (var i = 0; i < 1; i++) {
+      var task1 = d;
+      d.name = '我的任务' + "#tk#" + (nodeLength) + '_' + i;
       tasks.push({
         "name": task1.name,
+        "uuid": (Math.random() * 100000000000000000 +
+            100000000000000000) +
+          "",
         tasks: [task1]
       });
       totalNodes++;
@@ -98,6 +89,18 @@ var treeJSON = d3.json(url, function(error, result) {
     locale: locale,
     width: $(document).width(),
     height: $(document).height(),
+    changeTimeHandler: function(o) {
+      console.log(o);
+    },
+    changeStartTimeHandler: function(o) {
+      console.log(o);
+    },
+    changeEndTimeHandler: function(o) {
+      console.log(o);
+    },
+    changePercentHandler: function(o) {
+      console.log(o);
+    }
   });
   // console.log(tasks);
   var element = d3.select(document.getElementById('container')).datum(tasks);

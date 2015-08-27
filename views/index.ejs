@@ -61,13 +61,27 @@
   stroke-width:2
 }
 
-.menu line.left{
+.menu .left{
+  /*stroke: #0f0;*/
   stroke: #0f0;
+	cursor: col-resize;
 }
 
-.menu line.right{
-  stroke: #f00;
+.menu .right{
+  /*stroke: #f00;*/
+  stroke: #0f0;
+	cursor: col-resize;
 }
+
+.menu .percent{
+  /*fill: none;*/
+  stroke: #f00;
+  shape-rendering: crispEdges;
+	cursor: col-resize;
+  stroke-width:2
+}
+
+
 /**/
     </style>
 
@@ -163,6 +177,25 @@
     #container{
       width: 100%;
     }
+
+    .task.background, .task.pre{
+      shape-rendering: crispEdges;
+    }
+
+
+
+    .btn line {
+      fill: none;
+      stroke: #FFFFFF;
+      shape-rendering: crispEdges;
+      stroke-width: 1;
+    }
+    .btn.leftBtn, .btn.rightBtn, .percentBtn{
+      cursor: col-resize;
+    }
+
+
+
 
     </style>
 

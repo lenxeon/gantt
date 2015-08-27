@@ -11,7 +11,7 @@ module.exports = function filterDate(data, xScale, yScale, yMin, yMax,
   data.forEach(function(datum) {
     var start = xScale(datum.startDate);
     var end = xScale(datum.endDate);
-    var y = yScale(datum.name);
+    var y = yScale(datum.uuid);
     if (end < min || start > max) {
       return;
     }

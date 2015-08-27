@@ -95,15 +95,14 @@ module.exports = function(d3) {
 
 
         var graph = svg.append('g')
-          .attr('id', 'container-box')
-          // .attr('transform', 'translate(0, 25)');
+          .attr('id', 'container-box');
 
         var yDomain = [];
         var yRange = [];
 
 
         data.forEach(function(task, index) {
-          yDomain.push(task.name);
+          yDomain.push(task.uuid);
           yRange.push(index * 40);
         });
 
@@ -252,7 +251,7 @@ module.exports = function(d3) {
           .append('g')
           .classed('line', true)
           .attr('transform', function(d) {
-            return 'translate(0,' + (yScale(d.name)) + ')';
+            return 'translate(0,' + (yScale(d.uuid)) + ')';
           })
           .style('fill', config.eventLineColor);
 
@@ -278,11 +277,15 @@ module.exports = function(d3) {
             yScale: yScale,
             xScale: xScale,
             fullRedraw: fullRedraw,
-            eventColor: config.eventColor
+            eventColor: config.eventColor,
+            changeTimeHandler: config.changeTimeHandler,
+            changeStartTimeHandler: config.changeStartTimeHandler,
+            changeEndTimeHandler: config.changeEndTimeHandler,
+            changePercentHandler: config.changePercentHandler
           }));
 
           var et = new Date().getTime();
-          console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
+          // console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
         }
         redraw(false);
 
