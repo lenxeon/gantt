@@ -49,6 +49,9 @@ var treeJSON = d3.json(url, function(error, result) {
     for (var i = 0; i < 1; i++) {
       var task1 = d;
       d.name = '我的任务' + "#tk#" + (nodeLength) + '_' + i;
+      if (tasks.length > 6) {
+        continue;
+      }
       tasks.push({
         "name": task1.name,
         "uuid": (Math.random() * 100000000000000000 +
@@ -58,11 +61,25 @@ var treeJSON = d3.json(url, function(error, result) {
       });
       totalNodes++;
     }
+
+
+
     maxLabelLength = Math.max(d.name.length, maxLabelLength);
   }, function(d) {
     return d.children && d.children.length > 0 ? d.children :
       null;
   });
+
+
+  tasks.push({
+    "name": "这是一个装饰用的任务，为了生成尾线",
+    "uuid": (Math.random() * 100000000000000000 +
+        100000000000000000) +
+      "",
+    tasks: []
+  })
+
+
 
   var locale = d3.locale({
     "decimal": ",",

@@ -83,9 +83,10 @@ module.exports = function(d3) {
         zoom.x(xScale);
         zoom.size([graphWidth, graphHeight]);
 
-
-
+        var wrapperHeight = $('#wrapper').height();
         graphHeight = data.length * 40;
+        graphHeight = graphHeight < wrapperHeight ? wrapperHeight :
+          graphHeight;
         console.log(data.length + '个任务');
         var svg = d3.select(this)
           .append('svg')
@@ -131,14 +132,19 @@ module.exports = function(d3) {
 
 
 
+        var wrapperHeight = $('#wrapper').height();
+        console.log("graphHeight==" + graphHeight + '/' + wrapperHeight);
+
+
         function drawZoom() {
           var curx, cury;
           var zoomRect = graph
             .append('rect')
             .call(zoom)
             .classed('zoom', true)
+            .attr('fill', 'green')
             .attr('width', graphWidth)
-            .attr('height', graphHeight)
+            .attr('height', wrapperHeight)
             // .attr('display', 'none')
             // .attr('transform', 'translate(' + config.margin.left +
             //   ', 35)')
