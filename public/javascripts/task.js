@@ -79,8 +79,8 @@ module.exports = function(d3) {
             .attr('stroke', "#a0a0a0")
             .attr('class', "task pre")
             .attr('transform', "translate(0, 0.5)")
-            .attr('points', '0,0 ' + w + ',0 ' + w + ',20 ' + (w -
-              5) + ',7 5,7 0,20 0,0')
+            .attr('points', '0,0 ' + w + ',0 ' + w + ',10 ' + (w -
+              5) + ',7 5,7 0,10 0,0')
             .attr('style', 'fill:white;stroke-width:1');
 
 
@@ -92,13 +92,13 @@ module.exports = function(d3) {
 
           if (pw < 5) {
             pre.attr('points', '0,0 ' + pw + ',0 ' + pw +
-              ',7 ' + pw + ',7 0,20 0,0');
+              ',7 ' + pw + ',7 0,10 0,0');
           } else if (pw >= 5 && pw < (w - 5)) {
             pre.attr('points', '0,0 ' + pw + ',0 ' + pw +
-              ',7 5,7 0,20 0,0');
+              ',7 5,7 0,10 0,0');
           } else if (pw >= (w - 5)) {
             pre.attr('points', '0,0 ' + pw + ',0 ' + pw +
-              ',20 ' + (w - 5) + ',7 5,7 0,20 0,0');
+              ',7 ' + (w - 5) + ',7 5,7 0,10 0,0');
           }
         };
 

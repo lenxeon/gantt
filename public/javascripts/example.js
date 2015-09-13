@@ -15,7 +15,7 @@ function visit(parent, visitFn, childrenFn) {
 }
 
 //url
-var url = config.url || '/javascripts/flare_lite.json';
+var url = config.url || '/javascripts/flare.json';
 var treeJSON = d3.json(url, function(error, result) {
 
   var nodeLength = 0,
@@ -49,7 +49,7 @@ var treeJSON = d3.json(url, function(error, result) {
     for (var i = 0; i < 1; i++) {
       var task1 = d;
       d.name = '我的任务' + "#tk#" + (nodeLength) + '_' + i;
-      if (tasks.length > 6) {
+      if (tasks.length > 60) {
         continue;
       }
       tasks.push({
@@ -100,12 +100,23 @@ var treeJSON = d3.json(url, function(error, result) {
     ]
   });
 
+  var zoomScale = null;
+  var translateX = null;
 
   var app = d3.chart.app({
     name: 'lenxeon',
+    readonly: false,
+    zoomScale: null,
+    translateX: null,
     locale: locale,
     width: $(document).width(),
     height: $(document).height(),
+    zoomHandler: function(o) {
+      console.log(o);
+    },
+    moveHandler: function(o) {
+      console.log(o);
+    },
     changeTimeHandler: function(o) {
       console.log(o);
     },
@@ -122,4 +133,5 @@ var treeJSON = d3.json(url, function(error, result) {
   // console.log(tasks);
   var element = d3.select(document.getElementById('container')).datum(tasks);
   app(element);
+  window.tasks = tasks;
 });

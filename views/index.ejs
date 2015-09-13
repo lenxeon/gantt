@@ -4,6 +4,7 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/javascripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="/javascripts/d3.v3.min.js"></script>
     <script src="/javascripts/toolstip.js"></script>
     <script src="/javascripts/bundle.js"></script>
@@ -194,6 +195,24 @@
     }
     .btn.leftBtn, .btn.rightBtn, .percentBtn{
       cursor: col-resize;
+    }
+
+    .xAxisBox .d{
+      fill: black;
+    }
+
+    .xAxisBox .d rect{
+      fill: #ECECEC;
+    }
+
+    .xAxisBox .h rect{
+      fill: #FFCACA;
+    }
+    #header line, #footer line{
+      fill: none;
+      stroke: #666;
+      shape-rendering: crispEdges;
+      opacity: 0.5;
     }
 
 

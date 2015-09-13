@@ -70,6 +70,9 @@ module.exports = function(d3) {
         var leftOffFix = -19,
           rightOffFix = 5; //矩形偏移
         var redrawMenu = function() {
+          if (config.readonly) {
+            return;
+          }
           var task = taskBox.data()[0];
           if (task == null || window.config.selectId != task.name) {
             return;
@@ -222,6 +225,10 @@ module.exports = function(d3) {
             ", 13)").call(endTimeListener);
           percentBtn.attr('transform', "translate(" + px +
             ", 19)").call(percentListener);
+
+          // percentBtn.on('mouseover', tooltip.mouseover)
+          //   .on('mouseout', tooltip.mouseout)
+          //   .on('mousemove', tooltip.mousemove);
         }
 
         var percentX = function() {
@@ -262,7 +269,6 @@ module.exports = function(d3) {
           taskBox.enter()
             .append('g')
             .on('click', clickHandler)
-            .call(moveListener)
             .style('fill', config.eventColor)
             .attr('class', "item")
             .attr('transform', function(d) {
@@ -270,13 +276,16 @@ module.exports = function(d3) {
                 ', 13)'
             })
             .attr('height', 20)
-            .on('mouseover', tooltip.mouseover)
-            .on('mouseout', tooltip.mouseout)
-            .on('mousemove', tooltip.mousemove)
             .call(task({
               xScale: config.xScale,
               eventColor: config.eventColor
             }));
+            taskBox.on('mouseover', tooltip.mouseover)
+            .on('mouseout', tooltip.mouseout)
+            .on('mousemove', tooltip.mousemove);
+          if (!config.readonly) {
+            taskBox.call(moveListener);
+          }
           taskBox.exit().remove();
         }
         redrawTask();
@@ -317,39 +326,47 @@ module.exports = function(d3) {
         }
 
         // 处理任务左右移动的问题
-        moveListener.on("zoom",
-          function() {
-            if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
-              '[object MouseEvent]') {
-              var el = document.elementFromPoint(d3.event.clientX,
-                d3.event.clientY);
-              var x = 0,
-                w = 0;
-              /////////////////////
-              taskBox.attr('transform', function(d) {
-                var xScale = config.xScale;
-                w = xScale(d.endDate) - xScale(d.startDate);
-                x = xScale(d.startDate) + d3.event.translate[
-                  0]; //移动后的距离
-                var dateTime = xScale.invert(x); //转换成新的时间
-                var date = d3.time.day(dateTime); //对时间进行取整
-                x = xScale(date); //时间取整后的距离
-                d.startDate = date;
-                d.endDate = xScale.invert(x + w);
-                return 'translate(' + x + ', 13)';
-              });
-              redrawMenu();
-              /////////////////////
-              drawMask(x, w);
+        var transformMoveBefore = '';
+        moveListener
+          .on('zoomstart', function() {
+            transformMoveBefore = taskBox.attr('transform');
+          })
+          .on("zoom",
+            function() {
+              if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
+                '[object MouseEvent]') {
+                var el = document.elementFromPoint(d3.event.clientX,
+                  d3.event.clientY);
+                var x = 0,
+                  w = 0;
+                /////////////////////
+                taskBox.attr('transform', function(d) {
+                  var xScale = config.xScale;
+                  w = xScale(d.endDate) - xScale(d.startDate);
+                  x = xScale(d.startDate) + d3.event.translate[
+                    0]; //移动后的距离
+                  var dateTime = xScale.invert(x); //转换成新的时间
+                  var date = d3.time.day(dateTime); //对时间进行取整
+                  x = xScale(date); //时间取整后的距离
+                  d.startDate = date;
+                  d.endDate = xScale.invert(x + w);
+                  return 'translate(' + x + ', 13)';
+                });
+                redrawMenu();
+                /////////////////////
+                drawMask(x, w);
+              }
+              return false;
+            })
+          .on("zoomend", function() {
+            var box = d3.select('#container-box');
+            box.select('.lline').remove();
+            if(transformMoveBefore!=taskBox.attr('transform')){
+              if (typeof config.changeTimeHandler === 'function') {
+                config.changeTimeHandler(taskBox.data()[0]);
+              }
             }
-            return false;
-          }).on("zoomend", function() {
-          var box = d3.select('#container-box');
-          box.select('.lline').remove();
-          if (typeof config.changeTimeHandler === 'function') {
-            config.changeTimeHandler(taskBox.data()[0]);
-          }
-        });
+          });
       });
     };
     configurable(eventLine, config);

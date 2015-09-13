@@ -11,8 +11,9 @@ module.exports = function(d3) {
     name: 'project manager',
     start: d3.time.day(new Date()),
     end: d3.time.day.offset(d3.time.day(new Date()), 7),
-    minScale: 0,
-    maxScale: 100,
+    level: 1,
+    minScale: 0.08,
+    maxScale: 1,
     margin: {
       top: 45,
       left: 0,
@@ -56,9 +57,6 @@ module.exports = function(d3) {
     for (var key in defaultConfig) {
       config[key] = config[key] || defaultConfig[key];
     }
-
-
-
     function init(selection) {
 
       selection.each(function(data) {
@@ -71,16 +69,30 @@ module.exports = function(d3) {
           ])
           .on('zoomstart', zoomstart)
           .on("zoom", updateZoom)
-          .on("zoomend", function() {
-            console.log('zoomend');
-            // redraw(false);
-          });
+          .on("zoomend", zoomEnd);
+
+        config.stepWidth = 40;
+        config.step = graphWidth / config.stepWidth;
+        config.end = d3.time.day.offset(config.start, config.step);
+        config.zoom = zoom;
+
 
         var days = d3.time.days(config.start, config.end);
         xScale.range([0, graphWidth])
           .domain([config.start, config.end])
           .nice(d3.time.day);
+        // console.log(config.start);
+        // console.log(config.end);
+
+
+
         zoom.x(xScale);
+        if (config.zoomScale) {
+          zoom.scale(config.zoomScale);
+        }
+        if (config.translateX) {
+          zoom.translate([config.translateX, 0])
+        }
         zoom.size([graphWidth, graphHeight]);
 
         var wrapperHeight = $('#wrapper').height();
@@ -94,13 +106,11 @@ module.exports = function(d3) {
           .attr('width', graphWidth)
           .attr('height', graphHeight);
 
-
         var graph = svg.append('g')
           .attr('id', 'container-box');
 
         var yDomain = [];
         var yRange = [];
-
 
         data.forEach(function(task, index) {
           yDomain.push(task.uuid);
@@ -130,11 +140,8 @@ module.exports = function(d3) {
 
         yTick.exit().remove();
 
-
-
         var wrapperHeight = $('#wrapper').height();
-        console.log("graphHeight==" + graphHeight + '/' + wrapperHeight);
-
+        // console.log("graphHeight==" + graphHeight + '/' + wrapperHeight);
 
         function drawZoom() {
           var curx, cury;
@@ -144,56 +151,16 @@ module.exports = function(d3) {
             .classed('zoom', true)
             .attr('fill', 'green')
             .attr('width', graphWidth)
-            .attr('height', wrapperHeight)
-            // .attr('display', 'none')
-            // .attr('transform', 'translate(' + config.margin.left +
-            //   ', 35)')
-          ;
-
-          // if (typeof config.eventHover === 'function') {
-          //   zoomRect.on('mousemove', function(d, e) {
-          //     var event = d3.event;
-          //     if (curx == event.clientX && cury == event.clientY)
-          //       return;
-          //     curx = event.clientX;
-          //     cury = event.clientY;
-          //     zoomRect.attr('display', 'none');
-          //     var el = document.elementFromPoint(d3.event.clientX,
-          //       d3.event.clientY);
-          //     zoomRect.attr('display', 'block');
-          //     if (el.tagName !== 'circle') return;
-          //     config.eventHover(el);
-          //   });
-          // }
-          //
-          // if (typeof config.eventClick === 'function') {
-          //   zoomRect.on('click', function() {
-          //     zoomRect.attr('display', 'none');
-          //     var el = document.elementFromPoint(d3.event.clientX,
-          //       d3
-          //       .event.clientY);
-          //     zoomRect.attr('display', 'block');
-          //     if (el.tagName !== 'circle') return;
-          //     config.eventClick(el);
-          //   });
-          // }
+            .attr('height', wrapperHeight);
           return zoomRect;
         }
         drawZoom();
 
-
-
         graph.select('.graph-body').remove();
         var graphBody = graph
           .append('g')
-          .classed('graph-body', true)
-          // .attr('transform', 'translate(' + config.margin.left + ', ' +
-          //   (config.margin.top - 15) + ')')
-        ;
+          .classed('graph-body', true);
 
-        // var zoom = d3.behavior.zoom().center(null).scaleExtent([config.minScale,
-        //   config.maxScale
-        // ]).on("zoom", updateZoom);
         var timer = null;
 
         function zoomstart() {
@@ -219,6 +186,13 @@ module.exports = function(d3) {
             .event.sourceEvent.toString() ===
             '[object WheelEvent]') {
             zoom.scale(d3.event.scale);
+
+            // console.log('d3.event.translate[0]='+d3.event.translate[0]);
+            // if(d3.event.translate[0]<0){
+            //   return;
+            // }
+
+            zoom.translate([d3.event.translate[0], 0]);
           }
           if (config.scale && config.translate) {
             zoom.scale(config.scale);
@@ -234,22 +208,15 @@ module.exports = function(d3) {
           }, 300);
         }
 
-
-
-        // var lines = graphBody.selectAll('g').data(function(d) {
-        //   return filterLine(d, yScale, true);
-        // });
-        //
-        // lines.enter()
-        //   .append('g')
-        //   .classed('line', true)
-        //   .attr('transform', function(d) {
-        //     return 'translate(0,' + (yScale(d.name)) + ')';
-        //   })
-        //   .style('fill', config.eventLineColor);
-        //
-        // lines.exit().remove();
-
+        function zoomEnd() {
+          if (typeof config.zoomHandler ===
+            'function') {
+            config.zoomHandler({
+              scale: zoom.scale(),
+              translateX: zoom.translate()[0]
+            });
+          }
+        }
         var lines = null;
         lines = graphBody.selectAll('g').data(data);
 
@@ -278,6 +245,7 @@ module.exports = function(d3) {
             graphHeight, 'bottom');
 
           lines.call(eventLine({
+            readonly: config.readonly,
             margin: config.margin,
             graphHeight: graphHeight,
             yScale: yScale,
@@ -294,13 +262,10 @@ module.exports = function(d3) {
           // console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
         }
         redraw(false);
-
-
-
+        window.redraw = redraw;
       });
       loaded();
     }
-
     configurable(init, config);
     return init;
   };
