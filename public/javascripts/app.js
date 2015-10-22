@@ -12,10 +12,10 @@ module.exports = function(d3) {
     start: d3.time.day(new Date()),
     end: d3.time.day.offset(d3.time.day(new Date()), 7),
     level: 1,
-    minScale: 0.08,
-    maxScale: 1,
+    minScale: 0.03,
+    maxScale: 2,
     margin: {
-      top: 45,
+      top: 4,
       left: 0,
       bottom: 45,
       right: 0
@@ -49,7 +49,7 @@ module.exports = function(d3) {
     width: 1000
   };
 
-  return function app(config) {
+  var app = function app(config) {
     // console.log(config);
     var xScale = d3.time.scale();
     var yScale = d3.scale.ordinal();
@@ -87,12 +87,6 @@ module.exports = function(d3) {
 
 
         zoom.x(xScale);
-        if (config.zoomScale) {
-          zoom.scale(config.zoomScale);
-        }
-        if (config.translateX) {
-          zoom.translate([config.translateX, 0])
-        }
         zoom.size([graphWidth, graphHeight]);
 
         var wrapperHeight = $('#wrapper').height();
@@ -106,9 +100,15 @@ module.exports = function(d3) {
           .attr('width', graphWidth)
           .attr('height', graphHeight);
 
+        var dom = '<canvas id="container-box-bg" width="'
+          +graphWidth+'" height="'+1000+'">'
+        $("#wrapper").append(dom);
+
+        // var graphBG = svg.append('canvas')
+        //   .attr('id', 'container-box-bg');
+
         var graph = svg.append('g')
           .attr('id', 'container-box');
-
         var yDomain = [];
         var yRange = [];
 
@@ -134,7 +134,7 @@ module.exports = function(d3) {
           })
           .append('line')
           .classed('y-tick', true)
-          .attr("stroke-dasharray", "10, 10")
+          // .attr("stroke-dasharray", "10, 10")
           .attr('x1', config.margin.left)
           .attr('x2', config.margin.left + graphWidth);
 
@@ -151,7 +151,7 @@ module.exports = function(d3) {
             .classed('zoom', true)
             .attr('fill', 'green')
             .attr('width', graphWidth)
-            .attr('height', wrapperHeight);
+            .attr('height', graphHeight);
           return zoomRect;
         }
         drawZoom();
@@ -179,6 +179,7 @@ module.exports = function(d3) {
           if (d3.event.sourceEvent && d3
             .event.sourceEvent.toString() ===
             '[object MouseEvent]') {
+            d3.selectAll('.menu').remove()
             zoom.translate([d3.event.translate[0], 0]);
           }
 
@@ -261,12 +262,21 @@ module.exports = function(d3) {
           var et = new Date().getTime();
           // console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
         }
-        redraw(false);
-        window.redraw = redraw;
+        zoom.scale(config.level||1);
+        if (config.zoomScale) {
+          zoom.scale(config.zoomScale);
+        }
+        if (config.translateX) {
+          zoom.translate([config.translateX, 0])
+        }
+        redraw(true);
+        // window.redraw = redraw;
       });
       loaded();
     }
     configurable(init, config);
     return init;
   };
+
+  return app;
 };

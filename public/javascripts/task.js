@@ -88,7 +88,7 @@ module.exports = function(d3) {
             .attr('stroke', "#a0a0a0")
             .attr('class', "task pre")
             .attr('transform', "translate(0, 0.5)")
-            .attr('style', 'fill:ff9c4c;stroke-width:1');
+            .attr('style', 'fill:#FF953B;stroke-width:1');
 
           if (pw < 5) {
             pre.attr('points', '0,0 ' + pw + ',0 ' + pw +

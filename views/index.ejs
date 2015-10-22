@@ -19,6 +19,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background-color: #F9FAFC;
         /*background: #rgb(234, 255, 138);*/
 /*background: red;*/
       }
@@ -27,9 +28,8 @@
       }
       .axis path,.axis line {
       	fill: none;
-      	stroke: #000;
+      	stroke: #B5B5B5;
       	shape-rendering: crispEdges;
-        opacity: 0.5;
       }
       .tick text{
         font-size: 12px;
@@ -118,8 +118,6 @@
     	top: 0;
     	left: 0;
     	width: 100%;
-    	height: 45px;
-    	line-height: 45px;
     	/*border-bottom: 1px solid #CD235C;*/
     	padding: 0;
     	/*background: #eee;*/
@@ -143,7 +141,7 @@
     #wrapper {
     	position: absolute;
     	z-index: 1;
-    	top: 45px;
+    	top: 42px;
     	bottom: 45px;
     	left: 0;
     	width: 100%;
@@ -197,16 +195,21 @@
       cursor: col-resize;
     }
 
+    .xAxisBox{
+      background-color: red;
+      fill: red;
+    }
+
     .xAxisBox .d{
-      fill: black;
+      fill: #232524;
     }
 
     .xAxisBox .d rect{
-      fill: #ECECEC;
+      fill: #F9FAFC;
     }
 
     .xAxisBox .h rect{
-      fill: #FFCACA;
+      fill: rgb(242, 245, 251);
     }
     #header line, #footer line{
       fill: none;
@@ -319,6 +322,8 @@ function loaded () {
 
 <body>
 <svg id="header"></svg>
+
+</canvas>
 <div id="wrapper">
 	<div id="scroller">
   	<div id="container">

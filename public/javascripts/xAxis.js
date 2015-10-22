@@ -53,52 +53,6 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
 
 
   //------------------------------------------------------------------------
-  var zoom = config.zoom;
-  var scale = xScale.domain();
-  graph.selectAll('.xAxisMonthBox').remove();
-  var mainBox = graph.append('g').classed('xAxisMonthBox', true);
-  graph.selectAll('.xAxisBox').remove();
-  var subBox = graph.append('g').classed('xAxisBox', true);
-  var zoomScale = zoom.scale();
-
-  var drawMonth = function() {
-    var start = d3.time.day.offset(scale[0], -32);
-    var end = d3.time.day.offset(scale[1], 32);
-    var months = d3.time.months(start, end);
-
-    var xAxisMonthBox = null,
-      monthWidth = 0;
-    xAxisMonthBox = mainBox.selectAll('g').data(months);
-
-    var o = xAxisMonthBox.enter()
-      .append('g')
-      .attr('transform', function(d) {
-        return 'translate(' + (xScale(d)) + ',0)';
-      })
-
-    o.append('rect')
-      .attr('width', function(d) {
-        var next = d3.time.day.offset(d, 31);
-        next = d3.time.month(next);
-        monthWidth = xScale(next) - xScale(d);
-        return monthWidth - 1;
-      })
-      .attr('fill', '#dddddd')
-      .attr('height', 20)
-
-    o.append('text')
-      .attr("dx", 10)
-      .attr("dy", 13)
-      .attr('transform', function() {
-        return 'translate(' + (monthWidth / 2 - 40) + ', 0)';
-      })
-      .text(function(d) {
-        window.d = d;
-        return d.getFullYear() + '年' + (d.getMonth() + 1) + '月';
-      });
-
-    xAxisMonthBox.exit().remove();
-  }
 
   var drawYear = function() {
     var start = d3.time.year.offset(scale[0], -5);
@@ -122,7 +76,7 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
         monthWidth = xScale(next) - xScale(d);
         return monthWidth - 1;
       })
-      .attr('fill', '#dddddd')
+      .attr('fill', '#EFEFEF')
       .attr('height', 20)
 
     o.append('text')
@@ -167,9 +121,12 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
         var next = d3.time.day.offset(d, 31);
         next = d3.time.month(next);
         monthWidth = xScale(next) - xScale(d);
-        return monthWidth - 1;
+        return monthWidth;
       })
-      .attr('fill', '#dddddd')
+      .attr('fill', '#EFEFEF')
+      .attr('stroke', '#D2D1D1')
+      .attr('stroke-width', '1')
+      .attr('shape-rendering', 'crispEdges')
       .attr('height', 20)
 
     o.append('text')
@@ -192,7 +149,7 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
 
 
 
-  if (zoomScale > 0.8) {
+  if (zoomScale > 0.7) {
     drawMonth();
 
     var start = d3.time.day.offset(scale[0], -7);
@@ -214,6 +171,7 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
         }
         return result;
       })
+
       .attr('transform', function(d) {
         var dx = d3.time.day.offset(d, 0);
         return 'translate(' + (xScale(dx)) + ',0)';
@@ -222,8 +180,11 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
     o.append('rect')
       .attr('width', function(d) {
         var dx = d3.time.day.offset(d, 1);
-        return xScale(dx) - xScale(d) - 1;
+        return xScale(dx) - xScale(d);
       })
+      .attr('stroke', '#D2D1D1')
+      .attr('stroke-width', '1')
+      .attr('shape-rendering', 'crispEdges')
       .attr('height', 20)
 
     o.append('text')
@@ -234,7 +195,47 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
       });
 
     xAxisBox.exit().remove();
-  } else if (zoomScale > 0.2) {
+    //------
+
+    var mycanvas=document.getElementById("container-box-bg");
+    var mycontext=mycanvas.getContext('2d'); 
+    mycontext.clearRect(0,0,mycanvas.width,mycanvas.height);
+
+    var drawLine = function(dotXY, ops) {
+      mycontext.beginPath();
+      for (var att in ops) mycontext[att] = ops[att];
+      dotXY = dotXY.constructor == Object ? [dotXY || {
+        x: 0,
+        y: 0
+      }] : dotXY;
+      mycontext.moveTo(dotXY[0].x, dotXY[0].y);
+      for (var i = 1, len = dotXY.length; i < len; i++) mycontext.lineTo(dotXY[i].x, dotXY[i].y);
+      mycontext.stroke();
+    };
+
+
+
+    for(var i=0;i<days.length;i++){
+      var day = days[i];
+      var x1 = xScale(day);
+      var next = d3.time.day.offset(day, 1);
+      var x2 = xScale(next) - xScale(day) - 1;
+      x1 = Math.round(x1)+0.5;
+
+      var day = day.getDay();
+      var result = '';
+      if (day == 0 || day == 6) {
+        mycontext.fillStyle='rgb(242, 245, 251)';  
+        mycontext.fillRect(x1,0,x2,1000);
+      }
+      drawLine([{ x: x1, y: 0 }, { x: x1, y: 1000 }]
+      ,{lineWidth:1,strokeStyle:'rgb(230,228,229)'}); //+0.5偏移
+    }
+
+    //---
+
+
+  } else if (zoomScale > 0.15) {
     drawMonth();
 
     var start = d3.time.day.offset(scale[0], -14);
@@ -267,8 +268,11 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
       .attr('width', function(d) {
         var dx = d3.time.day.offset(d, +7);
         weekWidth = xScale(dx) - xScale(d);
-        return weekWidth - 1;
+        return weekWidth;
       })
+      .attr('stroke', '#D2D1D1')
+      .attr('stroke-width', '1')
+      .attr('shape-rendering', 'crispEdges')
       .attr('height', 20)
 
     o.append('text')
@@ -283,6 +287,40 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
       });
 
     xAxisBox.exit().remove();
+    //------
+
+    var mycanvas=document.getElementById("container-box-bg");
+    var mycontext=mycanvas.getContext('2d'); 
+    mycontext.clearRect(0,0,mycanvas.width,mycanvas.height);
+
+    var drawLine = function(dotXY, ops) {
+      mycontext.beginPath();
+      for (var att in ops) mycontext[att] = ops[att];
+      dotXY = dotXY.constructor == Object ? [dotXY || {
+        x: 0,
+        y: 0
+      }] : dotXY;
+      mycontext.moveTo(dotXY[0].x, dotXY[0].y);
+      for (var i = 1, len = dotXY.length; i < len; i++) mycontext.lineTo(dotXY[i].x, dotXY[i].y);
+      mycontext.stroke();
+    };
+
+
+
+    for(var i=0;i<weeks.length;i++){
+      var day = weeks[i];
+      var x1 = xScale(day);
+      var next = d3.time.day.offset(day, 7);
+      var x2 = xScale(next) - xScale(day) - 1;
+      x1 = Math.round(x1)+0.5;
+
+      var day = day.getDay();
+      var result = '';
+      drawLine([{ x: x1, y: 0 }, { x: x1, y: 1000 }]
+      ,{lineWidth:1,strokeStyle:'rgb(230,228,229)'}); //+0.5偏移
+    }
+
+    //---
   } else {
     drawYear();
 
@@ -309,8 +347,11 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
       .attr('width', function(d) {
         var dx = d3.time.month.offset(d, +1);
         monthWidth = xScale(dx) - xScale(d);
-        return monthWidth - 1;
+        return monthWidth;
       })
+      .attr('stroke', '#D2D1D1')
+      .attr('stroke-width', '1')
+      .attr('shape-rendering', 'crispEdges')
       .attr('height', 20)
 
     o.append('text')
@@ -324,24 +365,58 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
       });
 
     xAxisBox.exit().remove();
+    //------
+
+    var mycanvas=document.getElementById("container-box-bg");
+    var mycontext=mycanvas.getContext('2d'); 
+    mycontext.clearRect(0,0,mycanvas.width,mycanvas.height);
+
+    var drawLine = function(dotXY, ops) {
+      mycontext.beginPath();
+      for (var att in ops) mycontext[att] = ops[att];
+      dotXY = dotXY.constructor == Object ? [dotXY || {
+        x: 0,
+        y: 0
+      }] : dotXY;
+      mycontext.moveTo(dotXY[0].x, dotXY[0].y);
+      for (var i = 1, len = dotXY.length; i < len; i++) mycontext.lineTo(dotXY[i].x, dotXY[i].y);
+      mycontext.stroke();
+    };
+
+
+
+    for(var i=0;i<months.length;i++){
+      var day = months[i];
+      var x1 = xScale(day);
+      var dx = d3.time.month.offset(d, +1);
+      var x2 = xScale(next) - xScale(day) - 1;
+      x1 = Math.round(x1)+0.5;
+
+      var day = day.getDay();
+      var result = '';
+      drawLine([{ x: x1, y: 0 }, { x: x1, y: 1000 }]
+      ,{lineWidth:1,strokeStyle:'rgb(230,228,229)'}); //+0.5偏移
+    }
+
+    //---
   }
 
 
 
   if (where == 'top') {
-    subBox.attr('transform', 'translate(0, 22)');
+    subBox.attr('transform', 'translate(0, 21)');
     mainBox.attr('transform', 'translate(0, 1)');
   } else {
     subBox.attr('transform', 'translate(0, 2)');
-    mainBox.attr('transform', 'translate(0, 23)');
+    mainBox.attr('transform', 'translate(0, 22)');
   }
 
-  graph.selectAll('line').remove();
-  var line = graph.append('line')
-    .attr('x1', 0)
-    .attr('x2', config.width)
-    .attr('y1', lineY)
-    .attr('y2', lineY);
+  // graph.selectAll('line').remove();
+  // var line = graph.append('line')
+  //   .attr('x1', 0)
+  //   .attr('x2', config.width)
+  //   .attr('y1', lineY)
+  //   .attr('y2', lineY);
 
   //------------------------------------------------------------------------
   if (typeof config.axisFormat === 'function') {

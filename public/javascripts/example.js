@@ -49,7 +49,7 @@ var treeJSON = d3.json(url, function(error, result) {
     for (var i = 0; i < 1; i++) {
       var task1 = d;
       d.name = '我的任务' + "#tk#" + (nodeLength) + '_' + i;
-      if (tasks.length > 60) {
+      if (tasks.length > 6) {
         continue;
       }
       tasks.push({
@@ -104,6 +104,7 @@ var treeJSON = d3.json(url, function(error, result) {
   var translateX = null;
 
   var app = d3.chart.app({
+    level: 1,
     name: 'lenxeon',
     readonly: false,
     zoomScale: null,
@@ -130,8 +131,9 @@ var treeJSON = d3.json(url, function(error, result) {
       console.log(o);
     }
   });
-  // console.log(tasks);
+  window.app = app;
+  console.log(tasks);
   var element = d3.select(document.getElementById('container')).datum(tasks);
-  app(element);
+  window.o = app(element);
   window.tasks = tasks;
 });
