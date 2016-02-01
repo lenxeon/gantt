@@ -40,8 +40,8 @@ module.exports = function(d3) {
             .style('fill', "transparent")
             .attr('class', "task background")
             .attr('height', 10)
-            .attr('rx', 4)
-            .attr('ry', 4)
+            // .attr('rx', 4)
+            // .attr('ry', 4)
             .attr('stroke', "#a0a0a0")
             .attr('stroke-width', 1)
             .attr('width', function() {
@@ -56,8 +56,8 @@ module.exports = function(d3) {
             .attr('stroke', "#a0a0a0")
             .attr('class', "task pre")
             .attr('transform', "translate(0, 0.5)")
-            .attr('rx', 4)
-            .attr('ry', 4)
+            // .attr('rx', 4)
+            // .attr('ry', 4)
             .attr('height', 10)
             .attr('width', function() {
               return (config.xScale(data.endDate) - config.xScale(

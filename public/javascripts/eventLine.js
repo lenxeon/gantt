@@ -146,15 +146,17 @@ module.exports = function(d3) {
                   offset = steps * dayWidth + leftOffFix;
                   leftBtn.attr('transform', "translate(" + offset +
                     ", 13)")
-                  task.startDate = d3.time.day.offset(task._startDate,
-                    steps);
+                  task.startDate = d3.time.day.offset(task._startDate, steps);
                   redrawTask();
                   var x1 = percentX();
-                  percentBtn.attr("x", x1);
+                  // percentBtn.attr("x", x1);
                   //
                   w = xScale(task.endDate) - xScale(task.startDate);
                   var maskX = xScale(task.startDate);
                   drawMask(maskX, w);
+                  var px = maskX-xScale(task._startDate)+w*task.percent;
+
+                  percentBtn.attr('transform', "translate(" + px + ", 19)");
                 }
                 return false;
               })
@@ -163,7 +165,7 @@ module.exports = function(d3) {
               clearMask();
               if (typeof config.changeStartTimeHandler ===
                 'function') {
-                config.changeEndTimeHandler(taskBox.data()[0]);
+                config.changeStartTimeHandler(taskBox.data()[0]);
               }
             });
 
@@ -199,6 +201,9 @@ module.exports = function(d3) {
                   redrawTask();
                   var w = xScale(task.endDate) - xScale(task.startDate);
                   drawMask(xScale(task.startDate), w);
+                  var px = w * task.percent;
+
+                  percentBtn.attr('transform', "translate(" + px + ", 19)");
                 }
                 return false;
               })
@@ -267,7 +272,7 @@ module.exports = function(d3) {
           // console.log('重画任务');
           lineSvg.selectAll('.item').remove();
           taskBox.enter()
-            .append('g')
+            .insert('g')
             .on('click', clickHandler)
             .style('fill', config.eventColor)
             .attr('class', "item")
