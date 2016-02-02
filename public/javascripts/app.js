@@ -50,13 +50,14 @@ module.exports = function(d3) {
   };
 
   var app = function app(config) {
-    // console.log(config);
+    // //console.log(config);
     var xScale = d3.time.scale();
     var yScale = d3.scale.ordinal();
     config = config || {};
     for (var key in defaultConfig) {
       config[key] = config[key] || defaultConfig[key];
     }
+
     function init(selection) {
 
       selection.each(function(data) {
@@ -81,8 +82,8 @@ module.exports = function(d3) {
         xScale.range([0, graphWidth])
           .domain([config.start, config.end])
           .nice(d3.time.day);
-        // console.log(config.start);
-        // console.log(config.end);
+        // //console.log(config.start);
+        // //console.log(config.end);
 
 
 
@@ -93,15 +94,14 @@ module.exports = function(d3) {
         graphHeight = data.length * 40;
         graphHeight = graphHeight < wrapperHeight ? wrapperHeight :
           graphHeight;
-        console.log(data.length + '个任务');
+        //console.log(data.length + '个任务');
         var svg = d3.select(this)
           .append('svg')
           .attr('class', 'app')
           .attr('width', graphWidth)
           .attr('height', graphHeight);
 
-        var dom = '<canvas id="container-box-bg" width="'
-          +graphWidth+'" height="'+1000+'">'
+        var dom = '<canvas id="container-box-bg" width="' + graphWidth + '" height="' + 1000 + '">'
         $("#wrapper").append(dom);
 
         // var graphBG = svg.append('canvas')
@@ -141,7 +141,7 @@ module.exports = function(d3) {
         yTick.exit().remove();
 
         var wrapperHeight = $('#wrapper').height();
-        // console.log("graphHeight==" + graphHeight + '/' + wrapperHeight);
+        // //console.log("graphHeight==" + graphHeight + '/' + wrapperHeight);
 
         function drawZoom() {
           var curx, cury;
@@ -162,8 +162,12 @@ module.exports = function(d3) {
           .classed('graph-body', true);
 
         var timer = null;
+        var startScale = zoom.scale();
+        var startTrans = zoom.translate();
 
         function zoomstart() {
+          startScale = zoom.scale();
+          startTrans = zoom.translate();
           config.scale = null;
           config.translate = null;
           if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
@@ -172,7 +176,10 @@ module.exports = function(d3) {
               config.scale = zoom.scale();
               config.translate = zoom.translate();
             }
+          } else {
+            return false;
           }
+          //console.log(d3.event);
         }
 
         function updateZoom() {
@@ -181,32 +188,50 @@ module.exports = function(d3) {
             '[object MouseEvent]') {
             d3.selectAll('.menu').remove()
             zoom.translate([d3.event.translate[0], 0]);
-          }
+            //console.log('水平拖动');
 
-          if (d3.event.sourceEvent && d3.event.sourceEvent.altKey && d3
+            // if (config.scale && config.translate) {
+            //   zoom.scale(config.scale);
+            //   zoom.translate(config.translate);
+            // }
+            if (timer) {
+              clearTimeout(timer);
+            }
+            redraw(false);
+            timer = setTimeout(function() {
+              redraw(true);
+            }, 300);
+          } else if (d3.event.sourceEvent && d3.event.sourceEvent.altKey && d3
             .event.sourceEvent.toString() ===
             '[object WheelEvent]') {
+            //console.log('水平缩放');
             zoom.scale(d3.event.scale);
 
-            // console.log('d3.event.translate[0]='+d3.event.translate[0]);
+            // //console.log('d3.event.translate[0]='+d3.event.translate[0]);
             // if(d3.event.translate[0]<0){
             //   return;
             // }
 
-            zoom.translate([d3.event.translate[0], 0]);
+            // zoom.translate([d3.event.translate[0], 0]);
+            // zoom.scale(config.scale);
+
+
+
+            // if (config.scale && config.translate) {
+            //   zoom.scale(config.scale);
+            //   zoom.translate(config.translate);
+            // }
+            if (timer) {
+              clearTimeout(timer);
+            }
+            redraw(false);
+            timer = setTimeout(function() {
+              redraw(true);
+            }, 300);
+          } else{
+            zoom.scale(startScale);
+            zoom.translate(startTrans);
           }
-          if (config.scale && config.translate) {
-            zoom.scale(config.scale);
-            zoom.translate(config.translate);
-            return false;
-          }
-          if (timer) {
-            clearTimeout(timer);
-          }
-          redraw(false);
-          timer = setTimeout(function() {
-            redraw(true);
-          }, 300);
         }
 
         function zoomEnd() {
@@ -260,12 +285,12 @@ module.exports = function(d3) {
           }));
 
           var et = new Date().getTime();
-          // console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
+          // //console.log('重画整体' + fullRedraw + '=' + (et - st) + 'ms');
         }
-        zoom.scale(config.level||1);
-        if (config.zoomScale) {
-          zoom.scale(config.zoomScale);
-        }
+        zoom.scale(config.level || 1);
+        // if (config.zoomScale) {
+        //   zoom.scale(config.zoomScale);
+        // }
         if (config.translateX) {
           zoom.translate([config.translateX, 0])
         }

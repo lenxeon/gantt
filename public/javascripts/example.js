@@ -113,26 +113,26 @@ var treeJSON = d3.json(url, function(error, result) {
     width: $(document).width(),
     height: $(document).height(),
     zoomHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     },
     moveHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     },
     changeTimeHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     },
     changeStartTimeHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     },
     changeEndTimeHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     },
     changePercentHandler: function(o) {
-      console.log(o);
+      //console.log(o);
     }
   });
   window.app = app;
-  console.log(tasks);
+  //console.log(tasks);
   var element = d3.select(document.getElementById('container')).datum(tasks);
   window.o = app(element);
   window.tasks = tasks;

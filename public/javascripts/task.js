@@ -23,8 +23,8 @@ module.exports = function(d3) {
     var xScale = config.xScale;
     var task = function task(selection) {
       selection.each(function(data) {
-        // console.log(data);
-        // console.log('画任务');
+        // //console.log(data);
+        // //console.log('画任务');
         // 矩形显示方案
         var container = d3.select(this);
         container.selectAll('.task').remove();
@@ -45,7 +45,7 @@ module.exports = function(d3) {
             .attr('stroke', "#a0a0a0")
             .attr('stroke-width', 1)
             .attr('width', function() {
-              // console.log(data.endDate + '\t' + data.startDate +
+              // //console.log(data.endDate + '\t' + data.startDate +
               //   '\t' + (xScale(data.endDate) - xScale(data.startDate))
               // );
               return (xScale(data.endDate) - xScale(data.startDate))

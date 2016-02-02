@@ -91,7 +91,7 @@ module.exports = function(d3) {
           percentListener.on('zoomstart', function() {
               task._percent = task.percent || 0;
               task._xCurr = d3.event.sourceEvent.clientX;
-              console.log("zoomstart:" + task._xCurr);
+              //console.log("zoomstart:" + task._xCurr);
             }).on("zoom",
               function() {
                 if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
@@ -127,7 +127,7 @@ module.exports = function(d3) {
               task._steps = 0;
               task._percent = task.percent || 0;
               task._xCurr = d3.event.sourceEvent.clientX;
-              console.log("zoomstart:" + task._xCurr);
+              //console.log("zoomstart:" + task._xCurr);
             }).on("zoom",
               function() {
                 if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
@@ -177,7 +177,7 @@ module.exports = function(d3) {
               task._steps = 0;
               task._xCurr = d3.event.sourceEvent.clientX;
               task._width = xScale(task.endDate) - xScale(task.startDate);
-              console.log("zoomstart:" + task._xCurr);
+              //console.log("zoomstart:" + task._xCurr);
             }).on("zoom",
               function() {
                 if (d3.event.sourceEvent && d3.event.sourceEvent.toString() ===
@@ -239,12 +239,12 @@ module.exports = function(d3) {
         var percentX = function() {
           var task = taskBox.data()[0];
           var x = 0;
-          // console.log(leftBtn.attr('x'));
-          // console.log(rightBtn.attr('x'));
+          // //console.log(leftBtn.attr('x'));
+          // //console.log(rightBtn.attr('x'));
           // var left = parseFloat(leftBtn.attr('x')) + 10;
           // var right = parseFloat(rightBtn.attr('x')) - 10;
           // x = left + (right - left) * (task.percent || 0);
-          // console.log('left=' + left + '\t=' + right + '\t' + x);
+          // //console.log('left=' + left + '\t=' + right + '\t' + x);
           return x;
         }
 
@@ -269,7 +269,7 @@ module.exports = function(d3) {
 
         //画行
         var redrawTask = function() {
-          // console.log('重画任务');
+          // //console.log('重画任务');
           lineSvg.selectAll('.item').remove();
           taskBox.enter()
             .insert('g')

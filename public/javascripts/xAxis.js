@@ -327,7 +327,7 @@ module.exports = function(d3, config, xScale, graph, graphHeight, where) {
     var start = d3.time.month.offset(scale[0], -1);
     var end = d3.time.month.offset(scale[1], +1);
     var months = d3.time.months(start, end);
-    console.log(months);
+    //console.log(months);
 
     var xAxisBox = null,
       monthWidth = 0;

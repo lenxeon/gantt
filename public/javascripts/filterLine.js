@@ -12,7 +12,7 @@ module.exports = function filterDate(data, scale, lite) {
     // if (lite) {
     //   var name = d.name;
     //   var y = scale(name);
-    //   console.log([y, yMin, yMax].join(','))
+    //   //console.log([y, yMin, yMax].join(','))
     //   var _d = $.extend(true, {}, d);
     //   if (y < yMin || y > yMax) {
     //     _d.tasks.length = 0;
@@ -24,7 +24,7 @@ module.exports = function filterDate(data, scale, lite) {
     filteredData.push(d);
     // }
   });
-  console.log('count===' + count);
+  //console.log('count===' + count);
 
   return filteredData;
 };

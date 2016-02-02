@@ -71,7 +71,7 @@ module.exports = function(d3, config, graph, where) {
   }
 
   var drawXAxis = function drawXAxis() {
-    // console.log('where===' + where);
+    // //console.log('where===' + where);
     switch (where) {
       case 'leftBtn':
         return buildLeft();

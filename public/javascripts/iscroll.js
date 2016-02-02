@@ -379,7 +379,7 @@ IScroll.prototype = {
   },
 
   _start: function (e) {
-    //console.log(e);
+    ////console.log(e);
     // React to left mouse button only
     if ( utils.eventType[e.type] != 1 ) {
       if ( e.button !== 0 ) {
